@@ -10,11 +10,12 @@ import (
 	"regexp"
 	"time"
 
-	zlog "github.com/rs/zerolog/log"
+	// zlog "github.com/rs/zerolog/log"
 	"github.com/rylio/ytdl"
 )
 
 func main() {
+	// printf error occur while debug, weird problom
 	watches := getWatches("https://www.youtube.com/channel/UCKz6Q5oM_SEO4oIFCiAg-jw/videos")
 	for _, v := range watches {
 		save("https://www.youtube.com/watch?v=" + v)
@@ -69,11 +70,19 @@ func removeDuplicateElement(items []string) []string {
 
 // save will download videos from youtube, and save details at the same time.
 func save(url string) {
-	client := ytdl.Client{
-		HTTPClient: http.DefaultClient,
-		Logger:     zlog.Logger,
+	// client := ytdl.Client{
+	//         HTTPClient: http.DefaultClient,
+	//         Logger:     zlog.Logger,
+	// }
+	// info, err := client.GetVideoInfo(url)
+	// it is dev version fit above
+
+	// 0.6.2 version
+	info, err := ytdl.GetVideoInfo(url)
+	if err != nil {
+		log.Fatal(err)
 	}
-	info, err := client.GetVideoInfo(url)
+
 	// info judgement
 	if err != nil {
 		fmt.Println("Failed to get video info")
@@ -88,8 +97,9 @@ func save(url string) {
 		log.Fatal(err)
 	}
 	title := info.Title
-	pv := filepath.Join(root, title+".mp4")
-	pt := filepath.Join(root, title+".txt")
+	user := info.Artist
+	pv := filepath.Join(root, user, title+".mp4")
+	pt := filepath.Join(root, user, title+".txt")
 	// save
 	vfile, _ := os.Create(pv)
 	tfile, _ := os.Create(pt)
@@ -104,7 +114,8 @@ func save(url string) {
 	// 1 -> 22 -> 720p, 3 -> 37 -> 1080p
 	// Look up the number and itag at itag.go and format_list_test.go
 	// client.Download(info, info.Formats.Best(ytdl.FormatResolutionKey)[0], file)
-	err = client.Download(info, info.Formats[1], vfile)
+	// err = client.Download(info, info.Formats[1], vfile)  // this is dev version fit.
+	err = info.Download(info.Formats[1], vfile)
 	if err != nil {
 		log.Fatal(err)
 	}
