@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -14,12 +16,60 @@ import (
 	"github.com/rylio/ytdl"
 )
 
+var (
+	confDir string = "links.txt"
+)
+
 func main() {
 	// printf error occur while debug, weird problom
 	watches := getWatches("https://www.youtube.com/channel/UCKz6Q5oM_SEO4oIFCiAg-jw/videos")
 	for _, v := range watches {
 		save("https://www.youtube.com/watch?v=" + v)
 	}
+}
+
+func getLinks(filename string) (ls []string, err error) {
+	f, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	br := bufio.NewReader(f)
+	for {
+		a, _, c := br.ReadLine()
+		if c == io.EOF {
+			break
+		}
+		ls = append(ls, string(a))
+		fmt.Println(string(a))
+	}
+	return
+}
+
+// get current project's root path
+// return path not contain the exec file
+func GetProjectRoot() string {
+	var (
+		path string
+		err  error
+	)
+	defer func() {
+		if err != nil {
+			panic(fmt.Sprintf("GetProjectRoot error :%+v", err))
+
+		}
+
+	}()
+	path, err = filepath.Abs(filepath.Dir(os.Args[0]))
+	return path
+
+}
+
+// get configure file path
+func GetConfPath() string {
+	return GetProjectRoot() + confDir
+
 }
 
 func getWatches(ytchannel string) []string {
