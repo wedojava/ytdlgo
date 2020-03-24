@@ -1,39 +1,33 @@
-set GOARCH=amd64
-set GOOS=windows
-go build -ldflags "-s -w" -o ../dist/ytdlgo-windows-amd64.exe ./cmd/main
+#!/bin/sh
 
-set GOARCH=386
-set GOOS=windows
-go build -ldflags "-s -w" -o ../dist/ytdlgo-windows-386.exe ./cmd/main
+project_name="ytdlgo"
+release_version="0.0.1"
 
-set GOARCH=amd64
-set GOOS=linux
-go build -ldflags "-s -w" -o ../dist/ytdlgo-linux-amd64 ./cmd/main
+release_dir=./release
+rm -rf $release_dir/*
+mkdir -p $release_dir
 
-set GOARCH=386
-set GOOS=linux
-go build -ldflags "-s -w" -o ../dist/ytdlgo-linux-386 ./cmd/main
+cd  ./$(dirname $0)
 
-set GOARCH=arm64
-set GOOS=linux
-go build -ldflags "-s -w" -o ../dist/ytdlgo-linux-arm64 ./cmd/main
+gofmt -w ../
 
-set GOARCH=arm
-set GOOS=linux
-go build -ldflags "-s -w" -o ../dist/ytdlgo-linux-arm ./cmd/main
+for goos in "linux" "darwin" "freebsd" "windows"
+do
+    if [ "$goos" == "windows" ]; then
+      obj_name=$project_name.exe
+    else
+      obj_name=$project_name
+    fi
 
-set GOARCH=arm64
-set GOOS=linux
-go build -ldflags "-s -w" -o ../dist/ytdlgo-linux-arm64 ./cmd/main
+    GOOS=$goos GOARCH=amd64 go build
+    zip $release_dir/$project_name-$goos-amd64.zip $obj_name
+    GOOS=$goos GOARCH=386 go build
+    zip $release_dir/$project_name-$goos-386.zip $obj_name
+    rm -f $obj_name
+done
 
-set GOARCH=arm
-set GOOS=linux
-go build -ldflags "-s -w" -o ../dist/ytdlgo-linux-arm ./cmd/main
-
-set GOARCH=amd64
-set GOOS=darwin
-go build -ldflags "-s -w" -o ../dist/ytdlgo-darwin-amd64 ./cmd/main
-
-set GOARCH=386
-set GOOS=darwin
-go build -ldflags "-s -w" -o ../dist/ytdlgo-darwin-386 ./cmd/main
+cd $release_dir
+for file in ./*
+do
+    md5 -r $file >> sha1sum.txt
+done

@@ -40,9 +40,18 @@ func GetLinks(filename string) (ls []string, err error) {
 		if c == io.EOF {
 			break
 		}
-		ls = append(ls, string(a))
-		fmt.Println(string(a))
+		ls = append(ls, GetUrl(string(a))[1])
+		// fmt.Println(string(a))
 	}
+	return
+}
+
+// GetUrl will get the url from str, return as ["sth", "https://...."]
+// profix string and url must split by ` `, `|`, `:`, `：`
+func GetUrl(str string) (rt []string) {
+	var re = regexp.MustCompile(`(?m)(?P<tag>.*)[\||\s|:|：](?P<url>https://.*\b)`)
+	a := re.FindStringSubmatch(str)
+	rt = append(rt, a[1], a[2])
 	return
 }
 
