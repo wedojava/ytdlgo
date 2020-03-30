@@ -1,32 +1,45 @@
 #!/bin/sh
 
-project_name="ytdlgo"
-release_version="0.0.1"
+version="0.1.0"
+main_file="../cmd"
+target_dir="../release/"
+target_file="ytdlgo"
 
-release_dir=./release
-rm -rf $release_dir/*
-mkdir -p $release_dir
+rm -rf $target_dir
 
-cd  ./$(dirname $0)
+if [[ ! -x "$target_dir"  ]]; then
+        mkdir  -p "$target_dir"
+fi
 
-gofmt -w ../
+if [[ -z ${target_file}  ]];then
+        target_file=${main_file%".go"*}
+fi
+
+echo "build start"
 
 for goos in "linux" "darwin" "freebsd" "windows"
-do
+    do
+    # For AMD64
+    GOOS=$goos GOARCH=amd64
+    out_f_name=$target_dir$target_file-$goos-amd64
     if [ "$goos" == "windows" ]; then
-      obj_name=$project_name.exe
-    else
-      obj_name=$project_name
+        out_f_name=$out_f_name.exe
     fi
-
-    GOOS=$goos GOARCH=amd64 go build
-    zip $release_dir/$project_name-$goos-amd64.zip $obj_name
-    GOOS=$goos GOARCH=386 go build
-    zip $release_dir/$project_name-$goos-386.zip $obj_name
-    rm -f $obj_name
+    go build -v -ldflags="-X main.VERSION=1.0.0 -X 'main.BUILD_TIME=`date`' -X 'main.GO_VERSION=`go version`'" -o $out_f_name $main_file
+    tar JcvfP $target_dir/$target_file-$goos-amd64.tar.xz $out_f_name
+    rm -f $out_f_name
+    # For 386
+    GOOS=$goos GOARCH=386
+    out_f_name=$target_dir$target_file-$goos-386
+    if [ "$goos" == "windows" ]; then
+        out_f_name=$out_f_name.exe
+    fi
+    go build -v -ldflags="-X main.VERSION=1.0.0 -X 'main.BUILD_TIME=`date`' -X 'main.GO_VERSION=`go version`'" -o $out_f_name $main_file
+    tar JcvfP $target_dir/$target_file-$goos-386.tar.xz $out_f_name
+    rm -f $out_f_name
 done
 
-cd $release_dir
+cd $target_dir
 for file in ./*
 do
     md5 -r $file >> sha1sum.txt
