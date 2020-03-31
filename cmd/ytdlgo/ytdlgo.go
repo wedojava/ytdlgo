@@ -15,78 +15,15 @@ import (
 	"github.com/wedojava/ytdlgo/cmd/commons"
 )
 
-func Service(links []string) {
-	for {
-		for _, link := range links {
-			// printf error occur while debug, weird problom
-			watches := GetWatches(link)
-			for _, watch := range watches {
-				Save("https://wwww.youtube.com/watch?v=" + watch)
-			}
-		}
-	}
+type Links struct {
+	tag string
+	url string
 }
 
-func GetLinks(filename string) (ls []string, err error) {
-	f, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	br := bufio.NewReader(f)
-	for {
-		a, _, c := br.ReadLine()
-		if c == io.EOF {
-			break
-		}
-		ls = append(ls, GetUrl(string(a))[1])
-		// fmt.Println(string(a))
-	}
-	return
-}
-
-// GetUrl will get the url from str, return as ["sth", "https://...."]
-// profix string and url must split by ` `, `|`, `:`, `：`
-func GetUrl(str string) (rt []string) {
-	var re = regexp.MustCompile(`(?m)(?P<tag>.*)[\||\s|:|：](?P<url>https://.*\b)`)
-	a := re.FindStringSubmatch(str)
-	rt = append(rt, a[1], a[2])
-	return
-}
-
-func GetWatches(ytchannel string) []string {
-	var vs []string
-	// Request the HTML page.
-	res, err := http.Get(ytchannel)
-	if err != nil {
-		log.Fatal(err)
-	}
-	body, err := ioutil.ReadAll(res.Body)
-	defer res.Body.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-	if res.StatusCode != 200 {
-		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
-	}
-
-	var re = regexp.MustCompile(`(?m)(?P<prefix>/watch\?v=)(?P<id>[a-zA-Z0-9_-]*)`)
-	for _, match := range re.FindAllStringSubmatch(string(body), -1) {
-		if len(match[2]) != 11 {
-			continue
-		} else {
-			vs = append(vs, match[2])
-		}
-	}
-	vs = commons.StrSliceDeDupl(vs)
-	// printSlice(vs)
-
-	return vs
-}
-
-// save will download videos from youtube, and save details at the same time.
-func Save(url string) {
+// Ytdlgo will download videos from youtube, and save details at the same time.
+// @url must be youtube link of definite video.
+// @tag is the subfolder name to save the downloaded files.
+func Ytdlgo(url, tag string) {
 	// client := ytdl.Client{
 	//         HTTPClient: http.DefaultClient,
 	//         Logger:     zlog.Logger,
@@ -114,9 +51,9 @@ func Save(url string) {
 		log.Fatal(err)
 	}
 	title := info.Title
-	user := info.Artist
-	pv := filepath.Join(root, user, title+".mp4")
-	pt := filepath.Join(root, user, title+".txt")
+	// user := info.Artist
+	pv := filepath.Join(root, tag, title+".mp4")
+	pt := filepath.Join(root, tag, title+".txt")
 	// save
 	vfile, _ := os.Create(pv)
 	tfile, _ := os.Create(pt)
@@ -136,4 +73,77 @@ func Save(url string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func Service(links []Links) {
+	for {
+		for _, link := range links {
+			// printf error occur while debug, weird problom
+			watches := GetWatches(link.url)
+			for _, watch := range watches {
+				Ytdlgo("https://wwww.youtube.com/watch?v="+watch, link.tag)
+			}
+		}
+	}
+}
+
+// GetLinks get []Links from file
+func GetLinks(filename string) (ls []Links, err error) {
+	f, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	br := bufio.NewReader(f)
+	for {
+		a, _, c := br.ReadLine()
+		if c == io.EOF {
+			break
+		}
+		ls = append(ls, GetUrl(string(a)))
+		// fmt.Println(string(a))
+	}
+	return
+}
+
+// GetUrl will get the url from str, return as ["sth", "https://...."]
+// profix string and url must split by `|`, `:`, `：`
+func GetUrl(str string) (rt Links) {
+	var re = regexp.MustCompile(`(?m)\s*(?P<tag>\S*)\s*[\||:|：]\s*(?P<url>https://.*)\s*`)
+	a := re.FindStringSubmatch(str)
+	rt.tag = a[1]
+	rt.url = a[2]
+	return
+}
+
+// GetWatches can get []string match `/watch?v=` from body get via ytchannel.
+func GetWatches(ytchannel string) []string {
+	var vs []string
+	// Request the HTML page.
+	res, err := http.Get(ytchannel)
+	if err != nil {
+		log.Fatal(err)
+	}
+	body, err := ioutil.ReadAll(res.Body)
+	defer res.Body.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if res.StatusCode != 200 {
+		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
+	}
+
+	var re = regexp.MustCompile(`(?m)(?P<prefix>/watch\?v=)(?P<id>.*)\&+.*`)
+	for _, match := range re.FindAllStringSubmatch(string(body), -1) {
+		if len(match[2]) != 11 {
+			continue
+		} else {
+			vs = append(vs, match[2])
+		}
+	}
+	vs = commons.StrSliceDeDupl(vs)
+	// printSlice(vs)
+
+	return vs
 }
