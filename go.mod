@@ -3,14 +3,10 @@ module github.com/wedojava/ytdlgo
 go 1.14
 
 require (
-	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
-	github.com/hashicorp/go-version v1.2.0 // indirect
-	github.com/mattn/go-isatty v0.0.12 // indirect
-	github.com/mattn/go-runewidth v0.0.9 // indirect
-	github.com/mitchellh/gox v1.0.1 // indirect
-	github.com/olekukonko/tablewriter v0.0.4 // indirect
+	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394
+	github.com/chennqqi/chardet v0.0.0-20161007034103-ae230b79a1bb
+	github.com/gogs/chardet v0.0.0-20191104214054-4b6791f73a28
 	github.com/rs/zerolog v1.18.0 // indirect
 	github.com/rylio/ytdl v0.6.2
-	github.com/urfave/cli v1.22.3 // indirect
-	golang.org/x/sys v0.0.0-20200321134203-328b4cd54aae // indirect
+	golang.org/x/text v0.3.2 // indirect
 )

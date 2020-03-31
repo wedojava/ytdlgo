@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-	links, err := ytdlgo.GetLinks(filepath.Join("../", "configs", "channelmap.txt"))
+	// "gbk" is the default setting, so, "" is also right below, be notice, if your txt file be written in windows system, it must set the right code format as your local language set.
+	links, err := ytdlgo.GetLinks(filepath.Join("../", "configs", "channelmap.txt"), "gbk")
 	if err != nil {
 		log.Fatal(err)
 	}

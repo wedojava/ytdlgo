@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"unicode/utf8"
 
 	"github.com/rylio/ytdl"
 	"github.com/wedojava/ytdlgo/cmd/commons"
@@ -87,22 +88,33 @@ func Service(links []Links) {
 	}
 }
 
-// GetLinks get []Links from file
-func GetLinks(filename string) (ls []Links, err error) {
+// GetLinks get []Links from file, param fileCode default is "gbk"
+// fileCode can be set "" to omit, then it will deal file format with code gbk
+func GetLinks(filename string, fileCode string) (ls []Links, err error) {
 	f, err := os.Open(filename)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer f.Close()
+	// fdetect := commons.FileCodeDetector(filename)
 
+	if fileCode == "" {
+		fileCode = "gbk"
+	}
 	br := bufio.NewReader(f)
 	for {
 		a, _, c := br.ReadLine()
 		if c == io.EOF {
 			break
 		}
-		ls = append(ls, GetUrl(string(a)))
-		// fmt.Println(string(a))
+		if len(a) == 0 {
+			continue
+		}
+		s := string(a)
+		if !utf8.ValidString(s) {
+			s = commons.ConvertToUtf8(s, fileCode, "utf-8")
+		}
+		ls = append(ls, GetUrl(s))
 	}
 	return
 }

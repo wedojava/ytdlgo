@@ -45,6 +45,7 @@ func TestGetUrl(t *testing.T) {
 	})
 }
 
+// This test not pass cause it used for lookup the youtube watch links.
 func TestGetWatches(t *testing.T) {
 	actual := GetWatches(tcs[0].ytchannel)[0]
 	want := tcs[0].want[0]
@@ -63,7 +64,7 @@ func TestGetLinks(t *testing.T) {
 		}
 	}
 	t.Run("test get txt split by ln", func(t *testing.T) {
-		got, _ := GetLinks(filename)
+		got, _ := GetLinks(filename, "")
 		want := []Links{
 			{"testgolang", "https://tour.golang.org/moretypes/15"},
 			{"youtube", "https://www.youtube.com/watch?v=6SkbNlWMG5w"},
@@ -72,7 +73,7 @@ func TestGetLinks(t *testing.T) {
 		checkGetLinks(t, got, want)
 	})
 	t.Run("test get txt in configs/channelmap.txt", func(t *testing.T) {
-		got, _ := GetLinks(configfile)
+		got, _ := GetLinks(configfile, "")
 		want := []Links{
 			{"局面", "https://www.youtube.com/playlist?list=PLbmJmqERD0RI2ehh9rQfVwkm6GaksNjuJ"},
 			{"转载", "https://www.youtube.com/playlist?list=PLbmJmqERD0RKcqyQT1DHFnVmsFG6xmjN-"},

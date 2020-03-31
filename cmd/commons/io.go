@@ -2,6 +2,7 @@ package commons
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -36,4 +37,16 @@ func Exists(path string) bool {
 		return false
 	}
 	return true
+}
+
+func FileCodeDetector(filename string) string {
+	f, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+	fd, err := ioutil.ReadAll(f)
+	fdetect := StrDetector(string(fd))
+
+	return fdetect
 }
