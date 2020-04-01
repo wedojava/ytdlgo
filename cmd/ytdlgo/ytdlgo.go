@@ -17,21 +17,14 @@ import (
 )
 
 type Links struct {
-	tag string
-	url string
+	TAG string
+	URL string
 }
 
 // Ytdlgo will download videos from youtube, and save details at the same time.
-// @url must be youtube link of definite video.
+// @url must be youtube link of definite video. `watch?v=` at the end of url commonly.
 // @tag is the subfolder name to save the downloaded files.
-func Ytdlgo(url, tag string) {
-	// client := ytdl.Client{
-	//         HTTPClient: http.DefaultClient,
-	//         Logger:     zlog.Logger,
-	// }
-	// info, err := client.GetVideoInfo(url)
-	// it is dev version fit above
-
+func Ytdlgo(url, tag, root string) {
 	// 0.6.2 version
 	info, err := ytdl.GetVideoInfo(url)
 	if err != nil {
@@ -47,15 +40,16 @@ func Ytdlgo(url, tag string) {
 		return
 	}
 	// path prepare
-	root, err := commons.PathGenAsDate()
-	if err != nil {
-		log.Fatal(err)
-	}
 	title := info.Title
 	// user := info.Artist
-	pv := filepath.Join(root, tag, title+".mp4")
-	pt := filepath.Join(root, tag, title+".txt")
-	// save
+	i := info.DatePublished
+	vtime := fmt.Sprintf("%02d%02d", i.Hour, i.Minute)
+	pv := filepath.Join(root, tag, title+vtime+".mp4")
+	pt := filepath.Join(root, tag, title+vtime+".txt")
+	// save while file not exist
+	if commons.Exists(pv) {
+		return
+	}
 	vfile, _ := os.Create(pv)
 	tfile, _ := os.Create(pt)
 	defer vfile.Close()
@@ -76,14 +70,25 @@ func Ytdlgo(url, tag string) {
 	}
 }
 
-func Service(links []Links) {
-	for {
-		for _, link := range links {
-			// printf error occur while debug, weird problom
-			watches := GetWatches(link.url)
-			for _, watch := range watches {
-				Ytdlgo("https://wwww.youtube.com/watch?v="+watch, link.tag)
-			}
+// DownloadConfOnce will run with config at `../configs/channelmap.txt` by default setting of "" for param conf, also, format is "gbk" while value is ""
+func DownloadConfOnce(conf, format, root string) {
+	// "gbk" is the default setting, so, "" is also right below, be notice, if your txt file be written in windows system, it must set the right code format as your local language set.
+	if conf == "" {
+		conf = filepath.Join("../", "configs", "channelmap.txt")
+	}
+	if format == "" {
+		format = "gbk"
+	}
+	links, err := GetLinks(conf, format)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, link := range links {
+		// printf error occur while debug, weird problom
+		watches := GetWatches(link.URL)
+		for _, watch := range watches {
+			Ytdlgo("https://wwww.youtube.com/watch?v="+watch, link.TAG, root)
 		}
 	}
 }
@@ -124,14 +129,14 @@ func GetLinks(filename string, fileCode string) (ls []Links, err error) {
 func GetUrl(str string) (rt Links) {
 	var re = regexp.MustCompile(`(?m)\s*(?P<tag>\S*)\s*[\||:|：]\s*(?P<url>https://.*)\s*`)
 	a := re.FindStringSubmatch(str)
-	rt.tag = a[1]
-	rt.url = a[2]
+	rt.TAG = a[1]
+	rt.URL = a[2]
 	return
 }
 
 // GetWatches can get []string match `/watch?v=` from body get via ytchannel.
 func GetWatches(ytchannel string) []string {
-	var vs []string
+	var watch_v []string
 	// Request the HTML page.
 	res, err := http.Get(ytchannel)
 	if err != nil {
@@ -151,11 +156,11 @@ func GetWatches(ytchannel string) []string {
 		if len(match[2]) != 11 {
 			continue
 		} else {
-			vs = append(vs, match[2])
+			watch_v = append(watch_v, match[2])
 		}
 	}
-	vs = commons.StrSliceDeDupl(vs)
-	// printSlice(vs)
+	watch_v = commons.StrSliceDeDupl(watch_v)
+	// printSlice(watch_v)
 
-	return vs
+	return watch_v
 }

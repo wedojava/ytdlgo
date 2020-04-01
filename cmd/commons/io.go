@@ -9,10 +9,6 @@ import (
 	"time"
 )
 
-var (
-	confDir string = "configs/channelmap.txt"
-)
-
 func PathGenAsDate() (s string, err error) {
 	b := time.Now()
 	s1 := fmt.Sprintf("%d", b.Year())
@@ -26,6 +22,28 @@ func PathGenAsDate() (s string, err error) {
 		}
 	}
 	return
+}
+
+func RemoveFolder(folderPath string) error {
+	if !Exists(folderPath) {
+		return nil
+	}
+	err := os.RemoveAll(folderPath)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func RemoveRoutine(root string) error {
+	a := time.Now().AddDate(0, 0, -2)
+	b := fmt.Sprintf("%02d%02d", a.Month(), a.Day())
+	err := RemoveFolder(filepath.Join(root, b))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func Exists(path string) bool {

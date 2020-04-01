@@ -2,22 +2,40 @@ package main
 
 import (
 	"log"
-	"path/filepath"
+	"time"
 
+	"github.com/wedojava/ytdlgo/cmd/commons"
 	"github.com/wedojava/ytdlgo/cmd/ytdlgo"
 )
 
 func main() {
-	// "gbk" is the default setting, so, "" is also right below, be notice, if your txt file be written in windows system, it must set the right code format as your local language set.
-	links, err := ytdlgo.GetLinks(filepath.Join("../", "configs", "channelmap.txt"), "gbk")
+	go server()
+	// Just download the list one time.
+	// getNow()
+}
+
+func server() {
+	for {
+		now := time.Now()
+		// every 15' start workflow
+		if now.Minute() == 15 {
+			root, err := commons.PathGenAsDate()
+			if err != nil {
+				log.Fatal(err)
+			}
+			ytdlgo.DownloadConfOnce("", "", root)
+		} else {
+			time.Sleep(1 * time.Minute) // sleep 1 minute
+		}
+		commons.RemoveRoutine("")
+	}
+}
+
+func getNow() {
+	root, err := commons.PathGenAsDate()
 	if err != nil {
 		log.Fatal(err)
 	}
+	ytdlgo.DownloadConfOnce("", "", root)
 
-	go ytdlgo.Service(links)
-
-	// watches := ytdlgo.GetWatches("https://www.youtube.com/channel/UCKz6Q5oM_SEO4oIFCiAg-jw/videos")
-	// for _, v := range watches {
-	//         ytdlgo.Save("https://www.youtube.com/watch?v=" + v)
-	// }
 }
