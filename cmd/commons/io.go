@@ -48,13 +48,17 @@ func RemoveRoutine(root string) error {
 
 func Exists(path string) bool {
 	_, err := os.Stat(path) //os.Stat获取文件信息
-	if err != nil {
-		if os.IsExist(err) {
-			return true
-		}
+	if err != nil && os.IsNotExist(err) {
 		return false
 	}
 	return true
+	// if err != nil {
+	//         if os.IsExist(err) {
+	//                 return true
+	//         }
+	//         return false
+	// }
+	// return true
 }
 
 func FileCodeDetector(filename string) string {
