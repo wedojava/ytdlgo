@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"time"
 
 	"github.com/wedojava/ytdlgo/cmd/commons"
@@ -9,9 +10,17 @@ import (
 )
 
 func main() {
-	go server()
-	// Just download the list one time.
-	// getNow()
+	if len(os.Args) > 1 {
+		if os.Args[1] == "1" {
+			println("Deal with the download list once right now...")
+			getNow()
+		}
+	}
+	if len(os.Args) == 1 {
+		println("Download service start now!")
+		go server()
+	}
+	os.Exit(3)
 }
 
 func server() {
