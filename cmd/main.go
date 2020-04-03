@@ -49,7 +49,8 @@ func getNowDirectly() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	ytdlgo.DownloadWatchLinks("", "", root)
+	//ytdlgo.DownloadWatchLinks("", "", root)
+	ytdlgo.DownloadWatchLinks("list.txt", "", root)
 
 }
 

@@ -36,20 +36,26 @@ func Ytdlgo(url, tag, root string) {
 		fmt.Println("Failed to get video info")
 		return
 	}
-	if !commons.Just1Day(info.DatePublished) {
-		return
-	}
+	//if !commons.Just1Day(info.DatePublished) {
+	//	return
+	//}
 	// path prepare
 	title := info.Title
 	// user := info.Artist
 	i := info.DatePublished
-	vtime := fmt.Sprintf("%02d%02d", i.Hour, i.Minute)
-	pv := filepath.Join(root, tag, title+vtime+".mp4")
-	pt := filepath.Join(root, tag, title+vtime+".txt")
+	vtime := fmt.Sprintf("%02d%02d", i.Month(), i.Day())
+	root = filepath.Join(root, tag)
+	if !commons.Exists(root) {
+		os.Mkdir(root,0755)
+	}
+	pv := filepath.Join(root, vtime+title+".mp4")
+	pt := filepath.Join(root, vtime+title+".txt")
 	// save while file not exist
 	if commons.Exists(pv) {
+		fmt.Print("file exist and return.")
 		return
 	}
+
 	vfile, _ := os.Create(pv)
 	tfile, _ := os.Create(pt)
 	defer vfile.Close()
@@ -74,7 +80,7 @@ func Ytdlgo(url, tag, root string) {
 func DownloadWatchLinks(conf, format, root string) {
 	// "gbk" is the default setting, so, "" is also right below, be notice, if your txt file be written in windows system, it must set the right code format as your local language set.
 	if conf == "" {
-		conf = filepath.Join("../", "configs", "channelmap.txt")
+		conf = filepath.Join("configs", "channelmap.txt")
 	}
 	if format == "" {
 		format = "gbk"
@@ -93,7 +99,7 @@ func DownloadWatchLinks(conf, format, root string) {
 func DownloadConfOnce(conf, format, root string) {
 	// "gbk" is the default setting, so, "" is also right below, be notice, if your txt file be written in windows system, it must set the right code format as your local language set.
 	if conf == "" {
-		conf = filepath.Join("../", "configs", "channelmap.txt")
+		conf = filepath.Join("configs", "channelmap.txt")
 	}
 	if format == "" {
 		format = "gbk"
