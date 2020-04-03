@@ -71,6 +71,25 @@ func Ytdlgo(url, tag, root string) {
 }
 
 // DownloadConfOnce will run with config at `../configs/channelmap.txt` by default setting of "" for param conf, also, format is "gbk" while value is ""
+func DownloadWatchLinks(conf, format, root string) {
+	// "gbk" is the default setting, so, "" is also right below, be notice, if your txt file be written in windows system, it must set the right code format as your local language set.
+	if conf == "" {
+		conf = filepath.Join("../", "configs", "channelmap.txt")
+	}
+	if format == "" {
+		format = "gbk"
+	}
+	links, err := GetLinks(conf, format)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, link := range links {
+		Ytdlgo(link.URL, link.TAG, root)
+	}
+}
+
+// DownloadConfOnce will run with config at `../configs/channelmap.txt` by default setting of "" for param conf, also, format is "gbk" while value is ""
 func DownloadConfOnce(conf, format, root string) {
 	// "gbk" is the default setting, so, "" is also right below, be notice, if your txt file be written in windows system, it must set the right code format as your local language set.
 	if conf == "" {

@@ -12,13 +12,17 @@ import (
 func main() {
 	if len(os.Args) > 1 {
 		if os.Args[1] == "1" {
-			println("Deal with the download list once right now...")
+			println("Download service start now!")
+			go server()
+		}
+		if os.Args[1] == "2" {
+			println("Download service start now!")
 			getNow()
 		}
 	}
 	if len(os.Args) == 1 {
-		println("Download service start now!")
-		go server()
+		println("Deal with the download list once right now...")
+		getNowDirectly()
 	}
 	os.Exit(3)
 }
@@ -38,6 +42,15 @@ func server() {
 		}
 		commons.RemoveRoutine("")
 	}
+}
+
+func getNowDirectly() {
+	root, err := commons.PathGenAsDate()
+	if err != nil {
+		log.Fatal(err)
+	}
+	ytdlgo.DownloadWatchLinks("", "", root)
+
 }
 
 func getNow() {

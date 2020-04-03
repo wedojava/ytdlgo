@@ -26,22 +26,22 @@ func TestGetUrl(t *testing.T) {
 		got := GetUrl("剪辑： https://www.youtube.com/playlist?list=PLbmJmqERD0RLGX7tdpZNlSI1cHVIHlWLT")
 		want := "https://www.youtube.com/playlist?list=PLbmJmqERD0RLGX7tdpZNlSI1cHVIHlWLT"
 		wantTag := "剪辑"
-		checkGetUrl(t, got.url, want)
-		checkGetUrl(t, got.tag, wantTag)
+		checkGetUrl(t, got.URL, want)
+		checkGetUrl(t, got.TAG, wantTag)
 	})
 	t.Run("test url getting, split by :", func(t *testing.T) {
 		got := GetUrl("剪辑:https://www.youtube.com/playlist?list=PLbmJmqERD0RLGX7tdpZNlSI1cHVIHlWLT")
 		want := "https://www.youtube.com/playlist?list=PLbmJmqERD0RLGX7tdpZNlSI1cHVIHlWLT"
 		wantTag := "剪辑"
-		checkGetUrl(t, got.url, want)
-		checkGetUrl(t, got.tag, wantTag)
+		checkGetUrl(t, got.URL, want)
+		checkGetUrl(t, got.TAG, wantTag)
 	})
 	t.Run("test url getting, split by |", func(t *testing.T) {
 		got := GetUrl("剪辑 |https://www.youtube.com/playlist?list=PLbmJmqERD0RLGX7tdpZNlSI1cHVIHlWLT")
 		want := "https://www.youtube.com/playlist?list=PLbmJmqERD0RLGX7tdpZNlSI1cHVIHlWLT"
 		wantTag := "剪辑"
-		checkGetUrl(t, got.url, want)
-		checkGetUrl(t, got.tag, wantTag)
+		checkGetUrl(t, got.URL, want)
+		checkGetUrl(t, got.TAG, wantTag)
 	})
 }
 
