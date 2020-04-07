@@ -50,8 +50,8 @@ func getNowDirectly() {
 		log.Fatal(err)
 	}
 	//ytdlgo.DownloadWatchLinks("", "", root)
-	ytdlgo.DownloadWatchLinks("test/watchlist.txt", "", root)
-
+	//ytdlgo.DownloadWatchLinks("test/watchlist.txt", "", root)
+	ytdlgo.DownloadWatchLinks("list.txt", "", root)
 }
 
 func getNow() {

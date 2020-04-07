@@ -37,6 +37,9 @@ func Ytdlgo(url, tag, root string) {
 	//}
 	// path prepare
 	title := info.Title
+	reg := regexp.MustCompile(`[\\/\s:*?"<>|!]`)
+	rep := "${1}"
+	title = reg.ReplaceAllString(title, rep)
 	// user := info.Artist
 	i := info.DatePublished
 	vtime := fmt.Sprintf("%02d%02d", i.Month(), i.Day())
