@@ -13,7 +13,7 @@ func main() {
 	if len(os.Args) > 1 {
 		if os.Args[1] == "1" {
 			println("Download service start now!")
-			go server()
+			server()
 		}
 		if os.Args[1] == "2" {
 			println("Download service start now!")
@@ -40,7 +40,10 @@ func server() {
 		} else {
 			time.Sleep(1 * time.Minute) // sleep 1 minute
 		}
-		commons.RemoveRoutine("")
+		err := commons.RemoveRoutine("")
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 

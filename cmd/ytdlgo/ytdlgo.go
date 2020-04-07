@@ -175,13 +175,9 @@ func GetWatches(ytchannel string) []string {
 		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
 	}
 
-	var re = regexp.MustCompile(`(?m)(?P<prefix>/watch\?v=)(?P<id>.*)\&+.*`)
+	var re = regexp.MustCompile(`(?m)(?P<prefix>/watch\?v=)(?P<id>.{11}).*`)
 	for _, match := range re.FindAllStringSubmatch(string(body), -1) {
-		if len(match[2]) != 11 {
-			continue
-		} else {
-			watch_v = append(watch_v, match[2])
-		}
+		watch_v = append(watch_v, match[2])
 	}
 	watch_v = commons.StrSliceDeDupl(watch_v)
 	// printSlice(watch_v)
