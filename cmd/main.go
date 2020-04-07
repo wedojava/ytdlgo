@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/wedojava/ytdlgo/cmd/commons"
-	"github.com/wedojava/ytdlgo/cmd/ytdlgo"
+	"github.com/wedojava/ytdlgo/internal/commons"
+	"github.com/wedojava/ytdlgo/internal/ytdlgo"
 )
 
 func main() {

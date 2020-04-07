@@ -13,7 +13,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/rylio/ytdl"
-	"github.com/wedojava/ytdlgo/cmd/commons"
+	"github.com/wedojava/ytdlgo/internal/commons"
 )
 
 type Links struct {
@@ -45,7 +45,7 @@ func Ytdlgo(url, tag, root string) {
 	vtime := fmt.Sprintf("%02d%02d", i.Month(), i.Day())
 	root = filepath.Join(root, tag)
 	if !commons.Exists(root) {
-		os.Mkdir(root,0755)
+		os.Mkdir(root, 0755)
 	}
 	pv := filepath.Join(root, vtime+title+".mp4")
 	pt := filepath.Join(root, vtime+title+".txt")
