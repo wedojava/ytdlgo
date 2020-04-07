@@ -27,10 +27,6 @@ type Links struct {
 func Ytdlgo(url, tag, root string) {
 	// 0.6.2 version
 	info, err := ytdl.GetVideoInfo(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// info judgement
 	if err != nil {
 		fmt.Println("Failed to get video info")
@@ -41,6 +37,9 @@ func Ytdlgo(url, tag, root string) {
 	//}
 	// path prepare
 	title := info.Title
+	reg := regexp.MustCompile(`[\\/\s:*?"<>|!]`)
+	rep := "${1}"
+	title = reg.ReplaceAllString(title, rep)
 	// user := info.Artist
 	i := info.DatePublished
 	vtime := fmt.Sprintf("%02d%02d", i.Month(), i.Day())
