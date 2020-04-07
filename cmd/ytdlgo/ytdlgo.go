@@ -27,10 +27,6 @@ type Links struct {
 func Ytdlgo(url, tag, root string) {
 	// 0.6.2 version
 	info, err := ytdl.GetVideoInfo(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// info judgement
 	if err != nil {
 		fmt.Println("Failed to get video info")
