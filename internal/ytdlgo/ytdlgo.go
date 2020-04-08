@@ -112,7 +112,7 @@ func DownloadConfOnce(conf, format, root string) {
 		// printf error occur while debug, weird problom
 		watches := GetWatches(link.URL)
 		for _, watch := range watches {
-			Ytdlgo("https://wwww.youtube.com/watch?v="+watch, link.TAG, root)
+			Ytdlgo("https://www.youtube.com/watch?v="+watch, link.TAG, root)
 		}
 	}
 }
