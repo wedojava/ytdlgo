@@ -151,7 +151,7 @@ func GetLinks(filename string, fileCode string) (ls []Links, err error) {
 // GetUrl will get the url from str, return as ["sth", "https://...."]
 // profix string and url must split by `|`, `:`, `：`
 func GetUrl(str string) (rt Links) {
-	var re = regexp.MustCompile(`(?m)\s*(?P<tag>\S*)\s*[\||:|：]\s*(?P<url>https://.*)\s*`)
+	var re = regexp.MustCompile(`(?m)(?P<tag>.*)\s*[\||:|：]\s*(?P<url>https://.*)&`)
 	a := re.FindStringSubmatch(str)
 	rt.TAG = a[1]
 	rt.URL = a[2]
