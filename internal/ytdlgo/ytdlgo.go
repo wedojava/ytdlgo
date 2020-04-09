@@ -36,29 +36,35 @@ func Ytdlgo(url, tag, root string) {
 	//	return
 	//}
 	// path prepare
-	title := info.Title
+	title := info.Title[:240]
 	reg := regexp.MustCompile(`[\\/\s:*?"<>|!]`)
 	rep := "${1}"
 	title = reg.ReplaceAllString(title, rep)
 	// user := info.Artist
 	i := info.DatePublished
-	vtime := fmt.Sprintf("%02d%02d", i.Month(), i.Day())
+	vtime := fmt.Sprintf("[%02d%02d]", i.Month(), i.Day())
 	root = filepath.Join(root, tag)
 	if !commons.Exists(root) {
-		os.Mkdir(root, 0755)
+		err := os.MkdirAll(root, 0755)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	pv := filepath.Join(root, vtime+title+".mp4")
 	pt := filepath.Join(root, vtime+title+".txt")
 	// save while file not exist
 	if commons.Exists(pv) {
-		fmt.Print("file exist and return.")
+		fmt.Println("file exist and return.")
 		return
 	}
 
-	vfile, _ := os.Create(pv)
-	tfile, _ := os.Create(pt)
+	vfile, err := os.Create(pv)
+	tfile, err := os.Create(pt)
 	defer vfile.Close()
 	defer tfile.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	_, err = tfile.WriteString(info.Description)
 	if err != nil {
