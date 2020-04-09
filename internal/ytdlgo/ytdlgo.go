@@ -36,7 +36,10 @@ func Ytdlgo(url, tag, root string) {
 	//	return
 	//}
 	// path prepare
-	title := info.Title[:240]
+	title := info.Title
+	if len(title) > 240 {
+		title = title[:240]
+	}
 	reg := regexp.MustCompile(`[\\/\s:*?"<>|!]`)
 	rep := "${1}"
 	title = reg.ReplaceAllString(title, rep)
