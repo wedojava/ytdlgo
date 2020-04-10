@@ -1,27 +1,45 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/wedojava/ytdlgo/internal/ytdlgo"
 )
 
 func main() {
-	if len(os.Args) > 1 {
-		if os.Args[1] == "1" {
-			println("Download service start now!")
+	// Download video url list directly right now
+	if len(os.Args) == 1 {
+		println("[***********************************************]")
+		println("[*] Deal with the download list once right now...")
+		println("[***********************************************]")
+		ytdlgo.DownloadWatchLinks("list.txt", "", "Downloads")
+	} else { // Download channel or playlist url list for times.
+		numOfTimes := os.Args[1]
+		n, err := strconv.Atoi(numOfTimes)
+		if err != nil {
+			println("[------------------------]")
+			fmt.Println("[-] ", numOfTimes, " is not an integer.")
+			println("[------------------------]")
+			log.Fatal(err)
+		}
+		if n == 0 {
+			println("[******************************]")
+			println("[*] Download service start now!")
+			println("[******************************]")
 			server()
 		}
-		if os.Args[1] == "2" {
-			println("Download once start right now!")
+		for i := 0; i < n; i++ {
+			println("[*******************************************]")
+			fmt.Printf("[*] Try %d times download job start just now!\n", n)
+			println("[*******************************************]")
 			ytdlgo.DownloadConfOnce("", "", "Downloads")
 		}
 	}
-	if len(os.Args) == 1 {
-		println("Deal with the download list once right now...")
-		ytdlgo.DownloadWatchLinks("list.txt", "", "Downloads")
-	}
+
 	os.Exit(3)
 }
 
