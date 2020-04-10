@@ -22,16 +22,17 @@ ytdlgo
 #### Download youtube video by playlist or channel
 
 ```
-ytdlgo 2
+ytdlgo 123
 ```
  - It will scan `configs/channelmap.txt` and download all videos
  - `channelmap.txt` is split by `|`, before is subfolder name, after is channel or playlist link url.
  - every channel or playlist at one line.
+ - `123` means it will try to run the download 123 times.
 
 ### Download by task
 
 ```
-ytdlgo 1
+ytdlgo 0
 ```
  - It will scan `configs/channelmap.txt` and download all videos
  - `channelmap.txt` is split by `|`, before is subfolder name, after is channel or playlist link url.
