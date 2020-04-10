@@ -74,14 +74,21 @@ func Ytdlgo(url, tag, root string) {
 		log.Fatal(err)
 	}
 
-	// 1 -> 22 -> 720p, 3 -> 37 -> 1080p
+	err = info.Download(info.Formats[3], vfile)
+	if err != nil {
+		err = info.Download(info.Formats[1], vfile)
+		if err != nil {
+			err = info.Download(info.Formats[0], vfile)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+	}
+
+	// 0 -> 18 -> 360p, 1 -> 22 -> 720p, 3 -> 37 -> 1080p
 	// Look up the number and itag at itag.go and format_list_test.go
 	// client.Download(info, info.Formats.Best(ytdl.FormatResolutionKey)[0], file)
 	// err = client.Download(info, info.Formats[1], vfile)  // this is dev version fit.
-	err = info.Download(info.Formats[1], vfile)
-	if err != nil {
-		log.Fatal(err)
-	}
 }
 
 // DownloadConfOnce will run with config at `../configs/channelmap.txt` by default setting of "" for param conf, also, format is "gbk" while value is ""
